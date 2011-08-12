@@ -1,0 +1,103 @@
+<project name="EmailCheckerServiceApache" default="all" basedir=".">
+
+	<echo>+------------------------------------------------------------+</echo>
+	<echo>+           Intailization of variables.                      +</echo>
+	<echo>+------------------------------------------------------------+</echo>
+
+
+	<property name="base_dir" value=".." />
+	<property name="home_dir" value="../.." />
+	<property name="release_dir" location="${home_dir}/Release" />
+	<property name="project.webinf" value="${base_dir}/WebContent/WEB-INF" />
+	<property name="project.lib" value="${project.webinf}/lib" />
+	<property name="source_base_dir" value="${base_dir}/src" />
+
+	<!-- Set build class path -->
+	<target name="setclasspath">
+
+		<path id="project.classpath">
+			<fileset dir="${project.lib}">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+
+		<path id="project.fullclasspath">
+			<path refid="project.classpath" />
+		</path>
+
+	</target>
+
+	<target name="build-project">
+		<echo>+------------------------------------------------------------+</echo>
+		<echo>+           PROJECT Compilation and War creation             +</echo>
+		<echo>+------------------------------------------------------------+</echo>
+
+		<property name="projectclasspath" refid="project.fullclasspath" />
+		<echo message="Classpath = ${projectclasspath}" />
+
+		<delete dir="${release_dir}/EmailCheckerServiceApache" />
+		<delete dir="${release_dir}/EmailCheckerServiceApache_WAR" />
+
+		<mkdir dir="${release_dir}/EmailCheckerServiceApache" />
+		<mkdir dir="${release_dir}/EmailCheckerServiceApache_WAR" />
+		<mkdir dir="${release_dir}/EmailCheckerServiceApache/WEB-INF" />
+		<mkdir dir="${release_dir}/EmailCheckerServiceApache/META-INF" />
+		<mkdir dir="${release_dir}/EmailCheckerServiceApache/WEB-INF/classes" />
+
+		<javac srcdir="${source_base_dir}" destdir="${release_dir}/EmailCheckerServiceApache/WEB-INF/classes" includes="com/**" debug="true">
+			<classpath refid="project.fullclasspath" />
+		</javac>
+
+		<copy todir="${release_dir}/EmailCheckerServiceApache/WEB-INF/lib">
+			<fileset dir="${project.lib}">
+				<include name="**/*.jar" />
+				<exclude name="**/servlet-api.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${release_dir}/EmailCheckerServiceApache/WEB-INF/classes">
+			<fileset dir="${source_base_dir}">
+				<include name="**/*.xml" />
+				<include name="**/*.properties" />
+				<include name="**/*.json" />
+			</fileset>
+		</copy>
+
+		<copy todir="${release_dir}/EmailCheckerServiceApache/">
+			<fileset dir="${base_dir}/WebContent">
+				<include name="**/*.html" />
+				<include name="**/*.jsp" />
+			</fileset>
+		</copy>
+
+		<copy todir="${release_dir}/EmailCheckerServiceApache/WEB-INF">
+			<fileset dir="${base_dir}/WebContent/WEB-INF">
+				<include name="**/*.xml" />
+				<include name="**/*.xsd" />
+				<include name="**/*.properties" />
+				<include name="**/*.tld" />
+			</fileset>
+		</copy>
+
+		<delete dir="${release_dir}/EmailCheckerServiceApache/src" />
+
+		<copy todir="${release_dir}/EmailCheckerServiceApache/META-INF">
+			<fileset dir="${base_dir}/WebContent/META-INF">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+
+		<jar jarfile="${release_dir}/EmailCheckerServiceApache_WAR/EmailCheckerServiceApache.war" basedir="${release_dir}/EmailCheckerServiceApache">
+			<manifest>
+				<attribute name="Specification-Title" value="EmailCheckerServiceApache" />
+			</manifest>
+		</jar>
+
+	</target>
+
+	<target name="all">
+		<antcall target="setclasspath" />
+		<antcall target="build-project" />
+	</target>
+
+</project>
